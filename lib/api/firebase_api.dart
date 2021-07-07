@@ -13,7 +13,6 @@ class FirebaseApi {
       .transform(Utils.transformer(User.fromJson));
 
   static List<String> getChatId(String id_1, String id_2) {
-    print("ddd");
     if (id_1.compareTo(id_2) > 0) {
       return [id_1, id_2];
     } else {
