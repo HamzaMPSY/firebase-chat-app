@@ -12,9 +12,20 @@ class FirebaseApi {
       .snapshots()
       .transform(Utils.transformer(User.fromJson));
 
+  static List<String> getChatId(String id_1, String id_2) {
+    print("ddd");
+    if (id_1.compareTo(id_2) > 0) {
+      return [id_1, id_2];
+    } else {
+      return [id_2, id_1];
+    }
+  }
+
   static Future uploadMessage(String idUser, String message) async {
+    var ids = getChatId(idUser, myId);
+    String idChat = ids[0] + ids[1];
     final refMessages =
-        FirebaseFirestore.instance.collection('chats/$idUser/messages');
+        FirebaseFirestore.instance.collection('chats/$idChat/messages');
 
     final newMessage = Message(
       idUser: myId,
@@ -31,12 +42,16 @@ class FirebaseApi {
         .update({UserField.lastMessageTime: DateTime.now()});
   }
 
-  static Stream<List<Message>> getMessages(String idUser) =>
-      FirebaseFirestore.instance
-          .collection('chats/$idUser/messages')
-          .orderBy(MessageField.createdAt, descending: true)
-          .snapshots()
-          .transform(Utils.transformer(Message.fromJson));
+  static Stream<List<Message>> getMessages(String idUser) {
+    var ids = getChatId(idUser, myId);
+    String idChat = ids[0] + ids[1];
+
+    return FirebaseFirestore.instance
+        .collection('chats/$idChat/messages')
+        .orderBy(MessageField.createdAt, descending: true)
+        .snapshots()
+        .transform(Utils.transformer(Message.fromJson));
+  }
 
   static Future addRandomUsers(List<User> users) async {
     final refUsers = FirebaseFirestore.instance.collection('users');
@@ -48,7 +63,6 @@ class FirebaseApi {
       for (final user in users) {
         final userDoc = refUsers.doc();
         final newUser = user.copyWith(idUser: userDoc.id);
-
         await userDoc.set(newUser.toJson());
       }
     }
