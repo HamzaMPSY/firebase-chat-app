@@ -13,6 +13,7 @@ class FirebaseApi {
       .transform(Utils.transformer(User.fromJson));
 
   static Future uploadMessage(String idUser, String message) async {
+    print("Debug : " + idUser);
     final refMessages =
         FirebaseFirestore.instance.collection('chats/$idUser/messages');
 
