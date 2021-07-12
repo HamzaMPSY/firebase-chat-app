@@ -1,9 +1,14 @@
+import 'package:firebase_chat_example/api/firebase_api.dart';
 import 'package:firebase_chat_example/model/user.dart';
 import 'package:firebase_chat_example/page/chat_page.dart';
+import 'package:firebase_chat_example/page/search_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:firebase_chat_example/static/AppColor.dart';
+
+typedef void ListCallback(Stream<List<User>> users);
 
 class ChatHeaderWidget extends StatelessWidget {
   final List<User> users;
@@ -26,8 +31,8 @@ class ChatHeaderWidget extends StatelessWidget {
                 'Chats',
                 style: GoogleFonts.sulphurPoint(
                   color: Colors.black,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 35,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ),
@@ -40,9 +45,21 @@ class ChatHeaderWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15.0),
                 ),
                 child: TextFormField(
+                  textInputAction: TextInputAction.search,
+                  readOnly: true,
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => SearchPage(
+                        users: users,
+                      ),
+                    ));
+                  },
                   cursorColor: AppColor.FOCUS_INPUT_COLOR,
                   decoration: new InputDecoration(
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: AppColor.FOCUS_INPUT_COLOR,
+                      ),
                       focusColor: AppColor.FOCUS_INPUT_COLOR,
                       fillColor: AppColor.FOCUS_INPUT_COLOR,
                       border: OutlineInputBorder(),
@@ -50,7 +67,11 @@ class ChatHeaderWidget extends StatelessWidget {
                       enabledBorder: InputBorder.none,
                       errorBorder: InputBorder.none,
                       disabledBorder: InputBorder.none,
-                      hintStyle: TextStyle(fontSize: 18),
+                      hintStyle: GoogleFonts.sulphurPoint(
+                        color: Colors.grey,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                       contentPadding: EdgeInsets.only(
                           left: 15, bottom: 8, top: 12, right: 15),
                       hintText: "Rechercher..."),

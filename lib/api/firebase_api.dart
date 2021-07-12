@@ -6,9 +6,15 @@ import 'package:firebase_chat_example/model/user.dart';
 import '../utils.dart';
 
 class FirebaseApi {
+  static Stream<List<Convo>> getConvos(String uid) => FirebaseFirestore.instance
+      .collection("chats")
+      .orderBy('lastMessage.createdAt', descending: true)
+      .where("users", arrayContains: uid)
+      .snapshots()
+      .transform(Utils.transformer(Convo.fromJson));
+
   static Stream<List<User>> getUsers() => FirebaseFirestore.instance
       .collection('users')
-      .orderBy(UserField.lastMessageTime, descending: true)
       .snapshots()
       .transform(Utils.transformer(User.fromJson));
 
@@ -23,22 +29,24 @@ class FirebaseApi {
   static Future uploadMessage(String idUser, String message) async {
     var ids = getChatId(idUser, myId);
     String idChat = ids[0] + ids[1];
-    final refMessages =
-        FirebaseFirestore.instance.collection('chats/$idChat/messages');
+    DateTime createdAt = DateTime.now();
+
+    final refConvo = FirebaseFirestore.instance.collection('chats').doc(idChat);
 
     final newMessage = Message(
       idUser: myId,
-      urlAvatar: myUrlAvatar,
       username: myUsername,
       message: message,
-      createdAt: DateTime.now(),
+      read: false,
+      createdAt: createdAt,
     );
-    await refMessages.add(newMessage.toJson());
 
-    final refUsers = FirebaseFirestore.instance.collection('users');
-    await refUsers
-        .doc(idUser)
-        .update({UserField.lastMessageTime: DateTime.now()});
+    refConvo.set(<String, dynamic>{
+      'lastMessage': newMessage.toJson(),
+      'users': [idUser, myId]
+    }).then((value) {
+      refConvo.collection("messages").add(newMessage.toJson());
+    });
   }
 
   static Stream<List<Message>> getMessages(String idUser) {

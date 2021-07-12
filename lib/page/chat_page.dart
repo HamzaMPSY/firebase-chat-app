@@ -24,16 +24,13 @@ class _ChatPageState extends State<ChatPage> {
         body: SafeArea(
           child: Column(
             children: [
-              ProfileHeaderWidget(name: widget.user.name),
+              ProfileHeaderWidget(
+                  name: widget.user.name, urlAvatar: widget.user.urlAvatar),
               Expanded(
                 child: Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(25),
-                      topRight: Radius.circular(25),
-                    ),
                   ),
                   child: MessagesWidget(idUser: widget.user.idUser),
                 ),

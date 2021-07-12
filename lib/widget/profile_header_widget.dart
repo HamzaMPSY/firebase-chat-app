@@ -1,29 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfileHeaderWidget extends StatelessWidget {
   final String name;
+  final String urlAvatar;
 
   const ProfileHeaderWidget({
     @required this.name,
+    @required this.urlAvatar,
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Container(
-        height: 80,
-        padding: EdgeInsets.all(16).copyWith(left: 0),
+        height: 70,
+        padding: EdgeInsets.only(left: 10, top: 6, right: 10),
+        color: Colors.white,
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                BackButton(color: Colors.white),
+                BackButton(color: Colors.black),
                 Expanded(
                   child: Text(
                     name,
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.white,
+                    style: GoogleFonts.sulphurPoint(
+                      color: Colors.black,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -32,9 +36,22 @@ class ProfileHeaderWidget extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    buildIcon(Icons.call),
-                    SizedBox(width: 12),
-                    buildIcon(Icons.videocam),
+                    IconTheme(
+                      data: new IconThemeData(
+                          color: Colors.pink.shade200, size: 25),
+                      child: new Icon(Icons.call),
+                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                    IconTheme(
+                      data: new IconThemeData(
+                          color: Colors.pink.shade200, size: 25),
+                      child: new Icon(Icons.videocam_sharp),
+                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.04),
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundImage: NetworkImage(urlAvatar),
+                    ),
                   ],
                 ),
                 SizedBox(width: 4),
@@ -44,12 +61,12 @@ class ProfileHeaderWidget extends StatelessWidget {
         ),
       );
 
-  Widget buildIcon(IconData icon) => Container(
-        padding: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white54,
-        ),
-        child: Icon(icon, size: 25, color: Colors.white),
-      );
+  // Widget buildIcon(IconData icon) => Container(
+  //       padding: EdgeInsets.all(5),
+  //       decoration: BoxDecoration(
+  //         shape: BoxShape.circle,
+  //         color: Colors.white54,
+  //       ),
+  //       child: Icon(icon, size: 25, color: Colors.white),
+  //     );
 }
