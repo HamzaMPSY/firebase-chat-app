@@ -20,6 +20,13 @@ dependencies:
   font_awesome_flutter: any
   intl: ^0.17.0
 
+  firebase_storage: any
+  firebase_analytics: ^5.0.6
+  image_picker:
+  path: ^1.8.0  
+  
+
+
 
 dev_dependencies:
   flutter_test:

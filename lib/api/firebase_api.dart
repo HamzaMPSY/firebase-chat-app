@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_chat_example/data.dart';
 import 'package:firebase_chat_example/model/message.dart';
 import 'package:firebase_chat_example/model/user.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart';
 
 import '../utils.dart';
 
@@ -26,7 +30,7 @@ class FirebaseApi {
     }
   }
 
-  static Future uploadMessage(String idUser, String message) async {
+  static Future uploadMessage(String idUser, String message, bool isPic) async {
     var ids = getChatId(idUser, myId);
     String idChat = ids[0] + ids[1];
     DateTime createdAt = DateTime.now();
@@ -34,6 +38,7 @@ class FirebaseApi {
     final refConvo = FirebaseFirestore.instance.collection('chats').doc(idChat);
 
     final newMessage = Message(
+      type: isPic ? 'image' : 'txt',
       idUser: myId,
       username: myUsername,
       message: message,
@@ -49,6 +54,21 @@ class FirebaseApi {
     }).then((value) {
       refConvo.collection("messages").add(newMessage.toJson());
     });
+  }
+
+  static Future<String> uploadImageToFirebase(
+      String idUser, File _imageFile) async {
+    String fileName = basename(_imageFile.path);
+    var downloadUrl = '';
+    var storage = FirebaseStorage.instance;
+    TaskSnapshot snapshot =
+        await storage.ref('chats/$fileName').putFile(_imageFile);
+    if (snapshot.state == TaskState.success) {
+      downloadUrl = await snapshot.ref.getDownloadURL();
+    }
+    return downloadUrl;
+    // String link = await uploadTask.snapshot.ref.getDownloadURL.toString();
+    // return link;
   }
 
   static Stream<List<Message>> getMessages(String idUser) {
