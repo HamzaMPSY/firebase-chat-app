@@ -1,11 +1,12 @@
 import 'package:firebase_chat_example/api/firebase_api.dart';
-import 'package:firebase_chat_example/page/chat_page.dart';
 import 'package:firebase_chat_example/page/chats_page.dart';
 import 'package:firebase_chat_example/users.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 Future main() async {
+  initializeDateFormatting('fr_FR', null);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FirebaseApi.addRandomUsers(Users.initUsers);

@@ -53,14 +53,21 @@ class ChatBodyWidget extends StatelessWidget {
   List<Widget> getWidgets() {
     final List<Widget> list = <Widget>[];
     Map<String, User> userMap = getUserMap(users);
-    print(convos.length);
     for (Convo c in convos) {
       if (c.userIds[0] == myId) {
         list.add(ChatListItem(
-            user: userMap[c.userIds[1]], lastMessage: c.lastMessage));
+            user: userMap[c.userIds[1]],
+            lastMessage: c.lastMessage,
+            read: c.read,
+            messageCount: c.messageCount));
       } else {
+        print("here${c.messageCount}");
+
         list.add(ChatListItem(
-            user: userMap[c.userIds[0]], lastMessage: c.lastMessage));
+            user: userMap[c.userIds[0]],
+            lastMessage: c.lastMessage,
+            read: c.read,
+            messageCount: c.messageCount));
       }
     }
     return list;

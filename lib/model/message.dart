@@ -43,10 +43,15 @@ class Convo {
   final String id;
   final List<dynamic> userIds;
   final Map<dynamic, dynamic> lastMessage;
-  Convo({this.id, this.userIds, this.lastMessage});
+  final bool read;
+  final int messageCount;
+  Convo(
+      {this.read, this.messageCount, this.id, this.userIds, this.lastMessage});
 
   static Convo fromJson(Map<String, dynamic> json) => Convo(
       id: json['id'],
       userIds: json["users"] ?? <dynamic>[],
-      lastMessage: json['lastMessage'] ?? <dynamic>{});
+      lastMessage: json['lastMessage'] ?? <dynamic>{},
+      read: json['read'],
+      messageCount: json['messageCount']);
 }

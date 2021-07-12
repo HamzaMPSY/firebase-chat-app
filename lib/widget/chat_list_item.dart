@@ -11,21 +11,22 @@ class ChatListItem extends StatelessWidget {
   final User user;
   final Map<dynamic, dynamic> lastMessage;
 
-  bool read;
+  final bool read;
+  final int messageCount;
   BuildContext context;
 
-  ChatListItem({Key key, @required this.user, @required this.lastMessage})
+  ChatListItem(
+      {Key key, this.user, this.lastMessage, this.messageCount, this.read})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (lastMessage['idFrom'] == myId) {
-      read = false;
-    } else {
-      read = lastMessage['read'] == null ? true : lastMessage['read'];
-    }
+    // if (lastMessage['idUser'] == myId) {
+    //   read = false;
+    // }
+    print(read);
+    print(messageCount);
     this.context = context;
-
     return Container(
         child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
       buildContent(context),
@@ -49,7 +50,7 @@ class ChatListItem extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.85,
+                    width: MediaQuery.of(context).size.width * 0.9,
                     child: buildChatDetails(user.name, context),
                   )
                 ],
@@ -63,121 +64,127 @@ class ChatListItem extends StatelessWidget {
   }
 
   buildChatDetails(String name, BuildContext context) {
-    // return ListTile(
-    //   leading: CircleAvatar(
-    //     radius: 30,
-    //     backgroundImage: NetworkImage(user.urlAvatar),
-    //   ),
-    //   title: Text(user.name),
-    //   subtitle: Text(lastMessage['message'] ?? "Say Hi!"),
-
-    // );
-
-    return Row(children: [
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: SizedBox(
-                height: 70,
-                width: 70,
-                child: Stack(
-                  fit: StackFit.expand,
-                  overflow: Overflow.visible,
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(user.urlAvatar),
-                    ),
-                    Positioned(
-                        bottom: -10,
-                        right: -15,
-                        child: SizedBox(
-                            height: 46,
-                            width: 46,
-                            child: read
-                                ? Container()
-                                : Icon(Icons.brightness_1,
-                                    color: AppColor.FOCUS_INPUT_COLOR,
-                                    size: 20)))
-                  ],
-                ))),
-      ]),
-      Column(children: <Widget>[
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: Text(
-              user.name,
-              textAlign: TextAlign.left,
+    return Container(
+      height: 60,
+      child: ListTile(
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ChatPage(user: user),
+          ));
+        },
+        leading: Container(
+            height: 50,
+            width: 50,
+            child: Center(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(user.urlAvatar),
+                  ),
+                  Positioned(
+                      bottom: -10,
+                      right: -15,
+                      child: SizedBox(
+                          height: 46,
+                          width: 46,
+                          child: read
+                              ? Container()
+                              : Icon(Icons.brightness_1,
+                                  color: AppColor.FOCUS_INPUT_COLOR,
+                                  size: 20))),
+                  Positioned(
+                      bottom: -23,
+                      right: -35,
+                      child: SizedBox(
+                          height: 46,
+                          width: 46,
+                          child: read
+                              ? Container()
+                              : Container(
+                                  child: Text(
+                                  messageCount.toString(),
+                                  style: GoogleFonts.sulphurPoint(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ))))
+                ],
+              ),
+            )),
+        title: Padding(
+          padding: const EdgeInsets.only(top: 10.0),
+          child: Text(user.name,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              overflow: TextOverflow.clip,
               style: GoogleFonts.sulphurPoint(
                 color: Colors.black,
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
-              ),
+              )),
+        ),
+        subtitle: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: Flexible(
+                        child: Text(
+                          lastMessage['message'],
+                          textAlign: TextAlign.left,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: GoogleFonts.sulphurPoint(
+                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]),
             ),
-          ),
-        ]),
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 0.0),
-            child: Text(
-              lastMessage['message'],
-              textAlign: TextAlign.left,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.sulphurPoint(
-                color: Colors.grey,
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-          ),
-        ])
-      ]),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text(
-              getTime(lastMessage['createdAt']),
-              textAlign: TextAlign.right,
-            ),
-          )
-        ],
-      )
-    ]);
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    getTime(lastMessage['createdAt']),
+                    textAlign: TextAlign.right,
+                    style: GoogleFonts.sulphurPoint(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   String getTime(Timestamp timestamp) {
     DateTime date =
         DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch);
     DateFormat format;
-    if (date.difference(DateTime.now()).inMilliseconds <= 86400000) {
+    if (DateTime.now().difference(date).inDays <= 1) {
       format = DateFormat('jm');
     } else {
-      format = DateFormat.yMd('en_US');
+      format = DateFormat.yMd('fr_FR');
     }
     return format.format(
         DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch));
   }
 }
-
-
-// return Container(
-//             height: 75,
-//             child: ListTile(
-//               onTap: () {
-//                 Navigator.of(context).push(MaterialPageRoute(
-//                   builder: (context) => ChatPage(user: user),
-//                 ));
-//               },
-//               leading: CircleAvatar(
-//                 radius: 30,
-//                 backgroundImage: NetworkImage(user.urlAvatar),
-//               ),
-//               title: Text(user.name),
-//               //subtitle: Text(user.lastMessageId ?? "Say Hi!"),
-//             ),
-//           );

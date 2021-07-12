@@ -43,7 +43,9 @@ class FirebaseApi {
 
     refConvo.set(<String, dynamic>{
       'lastMessage': newMessage.toJson(),
-      'users': [idUser, myId]
+      'users': [idUser, myId],
+      'read': false,
+      'messageCount': FieldValue.increment(1.0)
     }).then((value) {
       refConvo.collection("messages").add(newMessage.toJson());
     });
@@ -52,6 +54,10 @@ class FirebaseApi {
   static Stream<List<Message>> getMessages(String idUser) {
     var ids = getChatId(idUser, myId);
     String idChat = ids[0] + ids[1];
+
+    final refConvo = FirebaseFirestore.instance.collection('chats').doc(idChat);
+
+    refConvo.update(<String, dynamic>{'read': true, 'messageCount': 0});
 
     return FirebaseFirestore.instance
         .collection('chats/$idChat/messages')
