@@ -11,6 +11,7 @@ class Message {
   final String idUser;
   final String username;
   final String message;
+  final String type;
   final bool read;
   final DateTime createdAt;
 
@@ -19,6 +20,7 @@ class Message {
     @required this.read,
     @required this.username,
     @required this.message,
+    @required this.type,
     @required this.createdAt,
   });
 
@@ -27,6 +29,7 @@ class Message {
         read: json['read'],
         username: json['username'],
         message: json['message'],
+        type: json['type'],
         createdAt: Utils.toDateTime(json['createdAt']),
       );
 
@@ -35,6 +38,7 @@ class Message {
         'read': read,
         'username': username,
         'message': message,
+        'type': type,
         'createdAt': Utils.fromDateTimeToJson(createdAt),
       };
 }

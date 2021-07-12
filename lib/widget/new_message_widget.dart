@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_chat_example/api/firebase_api.dart';
 import 'package:firebase_chat_example/utils.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 
 class NewMessageWidget extends StatefulWidget {
   final String idUser;
@@ -26,9 +28,28 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
   void sendMessage() async {
     FocusScope.of(context).unfocus();
 
-    await FirebaseApi.uploadMessage(widget.idUser, message);
+    await FirebaseApi.uploadMessage(widget.idUser, message, false);
 
     _controller.clear();
+  }
+
+  final picker = ImagePicker();
+  File _imageFile;
+
+  Future pickImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() async {
+      _imageFile = File(pickedFile.path);
+      String filename =
+          await FirebaseApi.uploadImageToFirebase(widget.idUser, _imageFile);
+
+      FirebaseApi.uploadMessage(
+          widget.idUser,
+          filename,
+          // 'https://firebasestorage.googleapis.com/v0/b/chatapp-d1409.appspot.com/o/$filename?alt=media&token=abd38181-cbd8-473e-862d-80ae1b9b9f07',
+          true);
+    });
   }
 
   @override
@@ -38,7 +59,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
         child: Row(
           children: <Widget>[
             GestureDetector(
-              onTap: null,
+              onTap: pickImage,
               child: IconTheme(
                 data: new IconThemeData(color: Colors.black26, size: 30),
                 child: new Icon(Icons.camera_alt_rounded),

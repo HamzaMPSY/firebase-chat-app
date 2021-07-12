@@ -2,6 +2,7 @@ import 'package:firebase_chat_example/model/message.dart';
 import 'package:firebase_chat_example/static/AppColor.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path/path.dart';
 
 class MessageWidget extends StatelessWidget {
   final Message message;
@@ -46,18 +47,26 @@ class MessageWidget extends StatelessWidget {
                   borderRadius: borderRadius
                       .subtract(BorderRadius.only(bottomLeft: radius)),
                 ),
-          child: buildMessage(),
+          child: buildMessage(context),
         ),
       ],
     );
   }
 
-  Widget buildMessage() => Column(
+  Widget buildMessage(context) {
+    if (message.type == 'txt') {
+      return buildTxt();
+    } else {
+      return buildImage(context);
+    }
+  }
+
+  Widget buildTxt() => Column(
         crossAxisAlignment:
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            message.message,
+            message.message ?? "new image",
             style: GoogleFonts.sulphurPoint(
               color: Colors.black,
             ),
@@ -65,4 +74,41 @@ class MessageWidget extends StatelessWidget {
           ),
         ],
       );
+  Widget buildImage(context) => GestureDetector(
+        child: Hero(
+            child: Image.network(
+          message.message,
+          fit: BoxFit.cover,
+          width: 100,
+        )),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) {
+            return DetailScreen(path: message.message.toString());
+          }));
+        },
+      );
+}
+
+class DetailScreen extends StatelessWidget {
+  final String path;
+
+  const DetailScreen({Key key, this.path}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: GestureDetector(
+        child: Center(
+          child: Hero(
+            tag: 'imageHero',
+            child: Image.network(
+              path,
+            ),
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
 }
